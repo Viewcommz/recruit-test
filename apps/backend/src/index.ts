@@ -1,84 +1,57 @@
-import express from "express";
-import cors from "cors";
-import helmet from "helmet";
-import dotenv from "dotenv";
-
-// 환경변수 로드
-dotenv.config();
+import express, { Request, Response } from 'express';
+import cors from 'cors';
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const port = process.env.PORT || 8000;
 
-// 미들웨어 설정
-app.use(helmet());
-app.use(
-    cors({
-        origin:
-            process.env.NODE_ENV === "production"
-                ? process.env.FRONTEND_URL
-                : "http://localhost:3000",
-        credentials: true,
-    })
-);
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true }));
+app.use(cors()); // Enable CORS for all routes
+app.use(express.json()); // Middleware to parse JSON bodies
 
-// 헬스체크 엔드포인트
-app.get("/api/health", (req, res) => {
-    res.json({
-        status: "ok",
-        message: "BookShelf API Server is running",
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV || "development",
-    });
+interface Book {
+  id: string;
+  title: string;
+  author: string;
+  priority: 'High' | 'Medium' | 'Low';
+}
+
+let books: Book[] = [];
+const priorityOrder = { High: 1, Medium: 2, Low: 3 };
+
+// GET /api/hello - Basic health check or welcome endpoint
+app.get('/api/hello', (req: Request, res: Response) => {
+  res.json({ message: 'Backend connected' });
 });
 
-// 기본 API 정보
-app.get("/api", (req, res) => {
-    res.json({
-        name: "BookShelf API",
-        version: "1.0.0",
-        description: "1시간 AI 개발 테스트용 백엔드",
-        endpoints: {
-            health: "/api/health",
-            info: "/api",
-        },
-    });
+// POST /api/books - Add a new book
+app.post('/api/books', (req: Request, res: Response) => {
+  const { title, author, priority } = req.body;
+
+  if (!title || !priority) {
+    return res.status(400).json({ error: 'Title and priority are required' });
+  }
+
+  if (!['High', 'Medium', 'Low'].includes(priority)) {
+    return res.status(400).json({ error: 'Priority must be High, Medium, or Low' });
+  }
+
+  const newBook: Book = {
+    id: Date.now().toString(), // Simple unique ID
+    title,
+    author,
+    priority,
+  };
+  books.push(newBook);
+  return res.status(201).json(newBook);
 });
 
-// 404 핸들러
-app.use("*", (req, res) => {
-    res.status(404).json({
-        success: false,
-        error: "Route not found",
-        message:
-            "이 테스트에서는 프론트엔드 구현에 집중하세요. localStorage를 사용하세요.",
-    });
+// GET /api/books - Get all books, sorted by priority
+app.get('/api/books', (req: Request, res: Response) => {
+  const sortedBooks = [...books].sort((a, b) => {
+    return priorityOrder[a.priority] - priorityOrder[b.priority];
+  });
+  return res.status(200).json(sortedBooks);
 });
 
-// 에러 핸들러
-app.use(
-    (
-        err: Error,
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
-    ) => {
-        console.error("Error:", err);
-        res.status(500).json({
-            success: false,
-            error:
-                process.env.NODE_ENV === "production"
-                    ? "Internal server error"
-                    : err.message,
-        });
-    }
-);
-
-// 서버 시작
-app.listen(PORT, () => {
-    console.log(`🚀 BookShelf API Server running on port ${PORT}`);
-    console.log(`📚 Environment: ${process.env.NODE_ENV || "development"}`);
-    console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
-    console.log(`💡 이 테스트에서는 프론트엔드 구현에 집중하세요!`);
+app.listen(port, () => {
+  console.log(`Backend server is running on http://localhost:${port}`);
 });
