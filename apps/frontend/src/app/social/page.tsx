@@ -15,9 +15,32 @@ export default function SocialPage() {
                         </Link>
                     </div>
 
-                    <div className="bg-blue-50 p-6 rounded-lg mb-6">
-                        <p className="text-sm text-gray-600">
-                            이 페이지에서 친구들 독서 현황 기능을 구현해주세요.
+                    {/* 구현 가이드 */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                        <div className="bg-blue-50 p-6 rounded-lg">
+                            <h3 className="font-semibold mb-4">🎯 개발 목표</h3>
+                            <div className="space-y-3 text-sm">
+                                <p>• 프론트엔드: Next.js + TypeScript</p>
+                                <p>• 백엔드: Express.js + API 구현</p>
+                                <p>• 데이터: 백엔드 API 또는 localStorage</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-green-50 p-6 rounded-lg">
+                            <h3 className="font-semibold mb-4">💡 구현 힌트</h3>
+                            <div className="text-sm space-y-2">
+                                <p>• POST /api/friends - 친구 추가</p>
+                                <p>• GET /api/reading-status - 독서 현황</p>
+                                <p>• 실시간 피드 구현</p>
+                                <p>• 진행률 표시</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 구현 영역 */}
+                    <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                        <p className="text-gray-500">
+                            이 영역에 친구들 독서 현황 기능을 구현해주세요.
                         </p>
                     </div>
                 </div>

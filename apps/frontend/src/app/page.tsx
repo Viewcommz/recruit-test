@@ -1,31 +1,52 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
     const [selectedProblem, setSelectedProblem] = useState<string>('');
     const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
     const [showImplementation, setShowImplementation] = useState(false);
-    const [showGuide, setShowGuide] = useState(false);
+    const router = useRouter();
 
     // 백엔드 연결 상태 확인
     useEffect(() => {
         const checkBackendConnection = async () => {
             try {
-                const response = await fetch('http://localhost:8000/api/health');
-                if (response.ok) {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+                const response = await fetch('http://localhost:8000/api/health', {
+                    signal: controller.signal,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Response is not JSON');
+                }
+
+                const data = await response.json();
+                if (data && data.status === 'ok') {
                     setBackendStatus('connected');
                 } else {
                     setBackendStatus('disconnected');
                 }
             } catch (error) {
+                console.error('Backend connection check failed:', error);
                 setBackendStatus('disconnected');
             }
         };
 
         checkBackendConnection();
-        // 5초마다 연결 상태 확인
         const interval = setInterval(checkBackendConnection, 5000);
         return () => clearInterval(interval);
     }, []);
@@ -54,6 +75,13 @@ export default function Home() {
             title: '📊 독서 패턴 분석',
             description: '나의 독서 습관을 분석하고 통계를 보는 도구',
             emoji: '📈'
+        },
+        {
+            id: 'custom',
+            title: '✨ 자유 주제',
+            description: '본인만의 독창적인 독서 도구를 자유롭게 구현',
+            emoji: '💡',
+            isCustom: true
         }
     ];
 
@@ -195,28 +223,30 @@ export default function Home() {
                 </div>
 
                 {/* 문제 선택 */}
-                <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-                    <h2 className="text-2xl font-semibold mb-6 text-center">
-                        해결하고 싶은 문제를 선택하세요
-                    </h2>
+                {!selectedProblem && (
+                    <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
+                        <h2 className="text-2xl font-semibold mb-6 text-center">
+                            해결하고 싶은 문제를 선택하세요
+                        </h2>
 
-                    <div className="grid md:grid-cols-2 gap-6">
-                        {problems.map((problem) => (
-                            <div
-                                key={problem.id}
-                                onClick={() => setSelectedProblem(problem.id)}
-                                className={`p-6 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${selectedProblem === problem.id
-                                    ? 'border-blue-500 bg-blue-50'
-                                    : 'border-gray-200 hover:border-gray-300'
-                                    }`}
-                            >
-                                <div className="text-4xl mb-3">{problem.emoji}</div>
-                                <h3 className="text-lg font-semibold mb-2">{problem.title}</h3>
-                                <p className="text-gray-600 text-sm">{problem.description}</p>
-                            </div>
-                        ))}
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {problems.map((problem) => (
+                                <div
+                                    key={problem.id}
+                                    onClick={() => setSelectedProblem(problem.id)}
+                                    className={`p-6 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${selectedProblem === problem.id
+                                        ? 'border-blue-500 bg-blue-50'
+                                        : 'border-gray-200 hover:border-gray-300'
+                                        }`}
+                                >
+                                    <div className="text-4xl mb-3">{problem.emoji}</div>
+                                    <h3 className="text-lg font-semibold mb-2">{problem.title}</h3>
+                                    <p className="text-gray-600 text-sm">{problem.description}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* 선택된 문제 상세 */}
                 {selectedProblem && (
@@ -259,12 +289,17 @@ export default function Home() {
                                     <li>• <strong>데이터:</strong> 독서 기록 데이터 분석</li>
                                 </ul>
                             )}
+                            {selectedProblem === 'custom' && (
+                                <ul className="text-sm space-y-1">
+                                    <li>• 어떠한 기술스택을 써도 무방</li>
+                                    <li>• 본인만의 자유로운 아이디어 구현</li>
+                                </ul>
+                            )}
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-4">
                             <button
-                                onClick={() => setShowImplementation(true)}
-                                disabled={backendStatus !== 'connected'}
+                                onClick={() => router.push(`/${selectedProblem}`)}
                                 className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-colors ${backendStatus === 'connected'
                                     ? 'bg-blue-600 text-white hover:bg-blue-700'
                                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -273,13 +308,6 @@ export default function Home() {
                                 🚀 구현 시작하기
                                 {backendStatus !== 'connected' && ' (백엔드 연결 필요)'}
                             </button>
-
-                            <Link
-                                href={`/${selectedProblem}`}
-                                className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors text-center"
-                            >
-                                🧩 구현 페이지로 이동
-                            </Link>
 
                             <button
                                 onClick={() => setSelectedProblem('')}
@@ -300,23 +328,53 @@ export default function Home() {
                     <div className="prose max-w-none">
                         {/* 테스트 개요 */}
                         <div className="bg-blue-50 p-6 rounded-lg mb-6">
-                            <h3 className="text-lg font-semibold mb-2">🧭 테스트 개요</h3>
+                            <h3 className="text-lg font-semibold my-2">🧭 테스트 개요</h3>
                             <ul className="text-sm list-disc pl-5">
                                 <li>Next.js(프론트엔드) + Express.js(백엔드) 기반 풀스택 개발 테스트</li>
                                 <li>문제 정의, 기획, 구현, 회고까지 실무와 유사한 전과정 경험</li>
                                 <li>AI 도구는 기본 제공되는 <b>Cursor</b> 사용 (본인이 사용하는 도구 사용 가능)</li>
+                                <li><b>목표</b>: 창의적 문제 해결, AI 협업, 풀스택 구현 역량</li>
+                                <li><b>주요 도구</b>: Next.js, Express.js, TypeScript, Tailwind CSS</li>
                             </ul>
+                        </div>
+
+                        {/* 평가 기준 */}
+                        <div className="bg-purple-50 p-6 rounded-lg mb-6">
+                            <h3 className="text-lg font-semibold my-2">📊 평가 기준</h3>
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div className="flex items-center gap-2">
+                                    <span className="font-semibold w-24">창의적 기획</span>
+                                    <span className="text-purple-700">25%</span>
+                                    <span className="text-gray-600">문제 정의, 해결 방법의 참신함</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="font-semibold w-24">AI 활용도</span>
+                                    <span className="text-purple-700">35%</span>
+                                    <span className="text-gray-600">Cursor 프롬프트 품질, 활용 효율성</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="font-semibold w-24">풀스택 구현</span>
+                                    <span className="text-purple-700">30%</span>
+                                    <span className="text-gray-600">프론트-백엔드 연동, API 설계</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="font-semibold w-24">코드 품질</span>
+                                    <span className="text-purple-700">10%</span>
+                                    <span className="text-gray-600">가독성, 구조화</span>
+                                </div>
+                            </div>
                         </div>
 
                         {/* 기본 실행 가이드 */}
                         <div className="bg-green-50 p-6 rounded-lg mb-6">
-                            <h3 className="text-lg font-semibold mb-2">⚡️ 기본 실행 가이드</h3>
+                            <h3 className="text-lg font-semibold my-2">⚡️ 기본 실행 가이드</h3>
                             <ul className="text-sm list-disc pl-5 mb-2">
                                 <li>아래 명령어로 개발 환경을 실행하세요.</li>
                             </ul>
                             <div className="bg-white p-4 rounded border text-xs">
                                 <pre className="whitespace-pre-wrap">
-                                    {`npm install
+                                    {`cd recruit-test
+npm install
 npm run dev
 # 프론트엔드: http://localhost:3000
 # 백엔드: http://localhost:8000`}
@@ -324,9 +382,29 @@ npm run dev
                             </div>
                         </div>
 
+                        {/* 브랜치 전략 */}
+                        <div className="bg-yellow-50 p-6 rounded-lg mb-6">
+                            <h3 className="text-lg font-semibold my-2">🌳 브랜치 전략</h3>
+                            <ul className="text-sm list-disc pl-5">
+                                <li>dev 브랜치에서 직접 작업/커밋/푸시 금지</li>
+                                <li>반드시 <code>features/지원자이름</code> 브랜치 생성 후 해당 브랜치에서만 작업</li>
+                                <li>예시: <code>git checkout -b features/hong-gil-dong dev</code></li>
+                            </ul>
+                        </div>
+
+                        {/* 커밋 가이드 */}
+                        <div className="bg-orange-50 p-6 rounded-lg mb-6">
+                            <h3 className="text-lg font-semibold my-2">💾 커밋 가이드</h3>
+                            <ul className="text-sm list-disc pl-5">
+                                <li>기능 단위로 커밋 (예: <code>feat: 책 추가 API 구현</code>)</li>
+                                <li>의미 없는 <code>fix</code>, <code>update</code> 단독 커밋 금지</li>
+                                <li>커밋 메시지는 목적이 드러나게 작성</li>
+                            </ul>
+                        </div>
+
                         {/* PLANNING.md 안내 */}
                         <div className="bg-gray-50 p-6 rounded-lg mb-6">
-                            <h3 className="text-lg font-semibold mb-2">📝 PLANNING.md 작성 안내</h3>
+                            <h3 className="text-lg font-semibold my-2">📝 PLANNING.md 작성 안내</h3>
                             <ul className="text-sm list-disc pl-5 mb-2">
                                 <li>개발 시작 전, 본인이 선택한 문제와 해결 전략을 간단히 정리</li>
                                 <li>아래 항목을 참고해 <b>PLANNING.md</b> 파일로 작성</li>
@@ -356,7 +434,7 @@ npm run dev
 
                         {/* REPORT.md 안내 */}
                         <div className="bg-yellow-50 p-6 rounded-lg mb-6">
-                            <h3 className="text-lg font-semibold mb-2">📝 REPORT.md 작성 안내</h3>
+                            <h3 className="text-lg font-semibold my-2">📝 REPORT.md 작성 안내</h3>
                             <ul className="text-sm list-disc pl-5 mb-2">
                                 <li>개발 완료 후, 본인의 개발 경험/회고/메시지를 <b>REPORT.md</b>로 자유롭게 작성</li>
                                 <li>아래 항목을 참고해 작성 (형식/분량 자유)</li>
@@ -388,39 +466,24 @@ npm run dev
                             </div>
                         </div>
 
-                        <div className="bg-blue-50 p-6 rounded-lg mb-6">
-                            <h3 className="text-lg font-semibold mb-2">🚀 제출 및 브랜치 전략</h3>
+                        {/* AI 활용 내역 제출 */}
+                        <div className="bg-indigo-50 p-6 rounded-lg mb-6">
+                            <h3 className="text-lg font-semibold my-2">🤖 AI 활용 내역 제출</h3>
                             <ul className="text-sm list-disc pl-5">
-                                <li><b>dev</b> 브랜치 기준, <b>features/본인이름</b> 브랜치 생성</li>
-                                <li>모든 개발/커밋은 본인 브랜치에서만 진행</li>
-                                <li>최종 제출은 <b>features/본인이름</b>로 제출</li>
-                                <li><b>dev 브랜치에 직접 push 시 금지</b></li>
-                            </ul>
-                        </div>
-
-                        <div className="bg-green-50 p-6 rounded-lg mb-6">
-                            <h3 className="text-lg font-semibold mb-2">💾 커밋 가이드</h3>
-                            <ul className="text-sm list-disc pl-5">
-                                <li>기능 단위로 커밋 (예: <code>feat: 책 추가 API 구현</code>)</li>
-                                <li>의미 없는 <code>fix</code>, <code>update</code> 단독 커밋 금지</li>
-                                <li>커밋 메시지는 한글/영문 자유, 반드시 목적이 드러나게 작성</li>
-                            </ul>
-                        </div>
-
-                        <div className="bg-yellow-50 p-6 rounded-lg mb-6">
-                            <h3 className="text-lg font-semibold mb-2">🤖 AI 활용 내역 제출</h3>
-                            <ul className="text-sm list-disc pl-5">
-                                <li>Cursor에서 AI프롬프트 대화 내역을 <b>export chat(MD 파일)</b>로 저장</li>
+                                <li>Cursor에서 AI 프롬프트 대화 내역을 <b>export chat(MD 파일)</b>로 저장</li>
                                 <li>해당 MD 파일을 <b>브랜치에 커밋</b>하여 제출</li>
+                                <li>프롬프트 내역은 평가 기준 중 <b>AI 활용도(35%)</b>에 반영</li>
                             </ul>
                         </div>
 
+                        {/* 유의사항 */}
                         <div className="bg-red-50 p-6 rounded-lg">
-                            <h3 className="text-lg font-semibold mb-2">⚠️ 기타 유의사항</h3>
+                            <h3 className="text-lg font-semibold my-2">⚠️ 유의사항</h3>
                             <ul className="text-sm list-disc pl-5">
                                 <li>완벽보다 <b>작동하는 프로토타입</b> 완성이 목표</li>
                                 <li>프론트-백엔드 연동, RESTful API, 최소한의 UI/UX에 집중</li>
                                 <li>AI 도구 활용 흔적(프롬프트 내역) 반드시 포함</li>
+                                <li>dev 브랜치에 직접 push 금지</li>
                             </ul>
                         </div>
                     </div>

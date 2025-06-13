@@ -15,9 +15,32 @@ export default function PriorityPage() {
                         </Link>
                     </div>
 
-                    <div className="bg-blue-50 p-6 rounded-lg mb-6">
-                        <p className="text-sm text-gray-600">
-                            이 페이지에서 읽고 싶은 책 우선순위 기능을 구현해주세요.
+                    {/* 구현 가이드 */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                        <div className="bg-blue-50 p-6 rounded-lg">
+                            <h3 className="font-semibold mb-4">🎯 개발 목표</h3>
+                            <div className="space-y-3 text-sm">
+                                <p>• 프론트엔드: Next.js + TypeScript</p>
+                                <p>• 백엔드: Express.js + API 구현</p>
+                                <p>• 데이터: 백엔드 API 또는 localStorage</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-green-50 p-6 rounded-lg">
+                            <h3 className="font-semibold mb-4">💡 구현 힌트</h3>
+                            <div className="text-sm space-y-2">
+                                <p>• POST /api/books - 책 추가</p>
+                                <p>• GET /api/books - 책 목록 조회</p>
+                                <p>• 우선순위 계산 알고리즘</p>
+                                <p>• 정렬 및 필터링 기능</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 구현 영역 */}
+                    <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                        <p className="text-gray-500">
+                            이 영역에 읽고 싶은 책 우선순위 기능을 구현해주세요.
                         </p>
                     </div>
                 </div>

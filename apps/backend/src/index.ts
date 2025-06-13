@@ -13,10 +13,9 @@ const PORT = process.env.PORT || 8000;
 app.use(helmet());
 app.use(
     cors({
-        origin:
-            process.env.NODE_ENV === "production"
-                ? process.env.FRONTEND_URL
-                : "http://localhost:3000",
+        origin: ["http://localhost:3000"],
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Accept"],
         credentials: true,
     })
 );
@@ -25,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // 헬스체크 엔드포인트
 app.get("/api/health", (req, res) => {
+    res.setHeader("Content-Type", "application/json");
     res.json({
         status: "ok",
         message: "BookShelf API Server is running",
