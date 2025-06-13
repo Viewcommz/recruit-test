@@ -80,5 +80,4 @@ app.listen(PORT, () => {
     console.log(`🚀 BookShelf API Server running on port ${PORT}`);
     console.log(`📚 Environment: ${process.env.NODE_ENV || "development"}`);
     console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
-    console.log(`💡 이 테스트에서는 프론트엔드 구현에 집중하세요!`);
 });

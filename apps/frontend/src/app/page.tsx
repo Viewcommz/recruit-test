@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 export default function Home() {
     const [selectedProblem, setSelectedProblem] = useState<string>('');
@@ -158,7 +159,7 @@ export default function Home() {
                 {/* 헤더 */}
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-bold text-gray-800 mb-4">
-                        📚 1시간 AI 개발 테스트
+                        📚 AI툴 활용 개발 테스트
                     </h1>
                     <p className="text-xl text-gray-600 mb-2">
                         나만의 독서 도구 만들기 (풀스택)
@@ -273,6 +274,13 @@ export default function Home() {
                                 {backendStatus !== 'connected' && ' (백엔드 연결 필요)'}
                             </button>
 
+                            <Link
+                                href={`/${selectedProblem}`}
+                                className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors text-center"
+                            >
+                                🧩 구현 페이지로 이동
+                            </Link>
+
                             <button
                                 onClick={() => setSelectedProblem('')}
                                 className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
@@ -287,129 +295,135 @@ export default function Home() {
                 <div className="bg-white rounded-lg shadow-lg p-8">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-semibold">📖 개발 가이드</h2>
-                        <button
-                            onClick={() => setShowGuide(!showGuide)}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                        >
-                            {showGuide ? '가이드 숨기기' : '가이드 보기'}
-                        </button>
                     </div>
 
-                    {showGuide && (
-                        <div className="prose max-w-none">
-                            <div className="bg-gray-50 p-6 rounded-lg">
-                                <h3 className="text-lg font-semibold mb-4">🎯 테스트 개요</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                                    <div>
-                                        <p><strong>소요시간:</strong> 60분 (정확히 1시간)</p>
-                                        <p><strong>테스트 형태:</strong> 개인 풀스택 프로토타이핑</p>
-                                        <p><strong>평가 목적:</strong> AI 도구 활용한 빠른 풀스택 개발 능력</p>
-                                    </div>
-                                    <div>
-                                        <p><strong>프론트엔드:</strong> Next.js 14 + TypeScript</p>
-                                        <p><strong>백엔드:</strong> Express.js + TypeScript</p>
-                                        <p><strong>데이터:</strong> 메모리 저장 또는 JSON 파일</p>
-                                    </div>
-                                </div>
-                            </div>
+                    <div className="prose max-w-none">
+                        {/* 테스트 개요 */}
+                        <div className="bg-blue-50 p-6 rounded-lg mb-6">
+                            <h3 className="text-lg font-semibold mb-2">🧭 테스트 개요</h3>
+                            <ul className="text-sm list-disc pl-5">
+                                <li>Next.js(프론트엔드) + Express.js(백엔드) 기반 풀스택 개발 테스트</li>
+                                <li>문제 정의, 기획, 구현, 회고까지 실무와 유사한 전과정 경험</li>
+                                <li>AI 도구는 기본 제공되는 <b>Cursor</b> 사용 (본인이 사용하는 도구 사용 가능)</li>
+                            </ul>
+                        </div>
 
-                            <div className="mt-6 bg-blue-50 p-6 rounded-lg">
-                                <h3 className="text-lg font-semibold mb-4">📊 평가 기준</h3>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                                    <div className="text-center">
-                                        <div className="text-2xl font-bold text-blue-600">25%</div>
-                                        <div className="font-medium">창의적 기획</div>
-                                        <div className="text-xs text-gray-600">문제 선택의 독창성</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-2xl font-bold text-green-600">35%</div>
-                                        <div className="font-medium">AI 활용도</div>
-                                        <div className="text-xs text-gray-600">프롬프트 품질</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-2xl font-bold text-purple-600">30%</div>
-                                        <div className="font-medium">풀스택 구현</div>
-                                        <div className="text-xs text-gray-600">프론트-백엔드 연동</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-2xl font-bold text-orange-600">10%</div>
-                                        <div className="font-medium">코드 품질</div>
-                                        <div className="text-xs text-gray-600">가독성, 구조화</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-6 bg-yellow-50 p-6 rounded-lg">
-                                <h3 className="text-lg font-semibold mb-4">⏰ 시간 관리</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                                    <div>
-                                        <h4 className="font-medium mb-2">권장 시간 배분:</h4>
-                                        <ul className="space-y-1">
-                                            <li>• 기획: 5-10분</li>
-                                            <li>• 백엔드 API 구현: 15-20분</li>
-                                            <li>• 프론트엔드 구현: 15-20분</li>
-                                            <li>• 연동 및 테스트: 5-10분</li>
-                                            <li>• 정리: 5분</li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-medium mb-2">시간 체크포인트:</h4>
-                                        <ul className="space-y-1">
-                                            <li>• 15분: API 엔드포인트 1-2개 완성</li>
-                                            <li>• 30분: 백엔드 기본 구조 완성</li>
-                                            <li>• 45분: 프론트엔드-백엔드 연동 완료</li>
-                                            <li>• 55분: 최종 테스트 및 정리</li>
-                                            <li>• 60분: 제출 준비 완료</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-6 bg-green-50 p-6 rounded-lg">
-                                <h3 className="text-lg font-semibold mb-4">📤 제출 결과물</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                                    <div>
-                                        <h4 className="font-medium mb-2">1. 작동하는 풀스택 앱</h4>
-                                        <ul className="space-y-1 text-xs">
-                                            <li>• npm run dev로 실행 가능</li>
-                                            <li>• 프론트엔드(3000) 정상 작동</li>
-                                            <li>• 백엔드(8000) 정상 작동</li>
-                                            <li>• API 연동 정상 동작</li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-medium mb-2">2. 기획서 (PLANNING.md)</h4>
-                                        <ul className="space-y-1 text-xs">
-                                            <li>• 선택한 문제와 해결 방법</li>
-                                            <li>• 프론트엔드/백엔드 역할 분담</li>
-                                            <li>• API 엔드포인트 설계</li>
-                                            <li>• 예상 사용 시나리오</li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-medium mb-2">3. AI 활용 리포트</h4>
-                                        <ul className="space-y-1 text-xs">
-                                            <li>• 사용한 AI 도구 목록</li>
-                                            <li>• 주요 프롬프트 3-5개</li>
-                                            <li>• AI 활용 효과 분석</li>
-                                            <li>• 절약된 시간 추정</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-6 bg-red-50 p-6 rounded-lg">
-                                <h3 className="text-lg font-semibold mb-4">📝 참고사항</h3>
-                                <ul className="text-sm space-y-2">
-                                    <li>• 완벽한 구현보다는 <strong>작동하는 풀스택 프로토타입</strong> 완성이 목표</li>
-                                    <li>• <strong>프론트엔드-백엔드 연동</strong>이 핵심 평가 요소</li>
-                                    <li>• <strong>AI 도구 활용 능력</strong>이 가장 중요한 평가 기준</li>
-                                    <li>• 시간 부족 시 <strong>우선순위</strong>를 정해서 핵심 기능부터 완성</li>
-                                    <li>• 막히는 부분이 있어도 <strong>포기하지 말고</strong> AI의 도움을 적극 활용</li>
-                                </ul>
+                        {/* 기본 실행 가이드 */}
+                        <div className="bg-green-50 p-6 rounded-lg mb-6">
+                            <h3 className="text-lg font-semibold mb-2">⚡️ 기본 실행 가이드</h3>
+                            <ul className="text-sm list-disc pl-5 mb-2">
+                                <li>아래 명령어로 개발 환경을 실행하세요.</li>
+                            </ul>
+                            <div className="bg-white p-4 rounded border text-xs">
+                                <pre className="whitespace-pre-wrap">
+                                    {`npm install
+npm run dev
+# 프론트엔드: http://localhost:3000
+# 백엔드: http://localhost:8000`}
+                                </pre>
                             </div>
                         </div>
-                    )}
+
+                        {/* PLANNING.md 안내 */}
+                        <div className="bg-gray-50 p-6 rounded-lg mb-6">
+                            <h3 className="text-lg font-semibold mb-2">📝 PLANNING.md 작성 안내</h3>
+                            <ul className="text-sm list-disc pl-5 mb-2">
+                                <li>개발 시작 전, 본인이 선택한 문제와 해결 전략을 간단히 정리</li>
+                                <li>아래 항목을 참고해 <b>PLANNING.md</b> 파일로 작성</li>
+                            </ul>
+                            <div className="bg-white p-4 rounded border text-xs">
+                                <b>예시 템플릿</b><br />
+                                <pre className="whitespace-pre-wrap">
+                                    {`# 기획서
+
+## 선택한 문제
+- (예시) 읽고 싶은 책 우선순위, 친구들 독서 현황
+
+## 핵심 기능
+1. (예시) 책 추가/삭제/수정
+2. (예시) 우선순위 자동 계산
+3. (예시) 친구별 독서 현황 피드
+
+## 데이터 구조/주요 API 설계
+- Book, User, Friend 등 주요 타입/엔드포인트 간단 정의
+
+## 기대 효과 및 차별화 포인트
+- 실제로 어떤 문제를 해결할지, 기존과 다른 점
+`}
+                                </pre>
+                            </div>
+                        </div>
+
+                        {/* REPORT.md 안내 */}
+                        <div className="bg-yellow-50 p-6 rounded-lg mb-6">
+                            <h3 className="text-lg font-semibold mb-2">📝 REPORT.md 작성 안내</h3>
+                            <ul className="text-sm list-disc pl-5 mb-2">
+                                <li>개발 완료 후, 본인의 개발 경험/회고/메시지를 <b>REPORT.md</b>로 자유롭게 작성</li>
+                                <li>아래 항목을 참고해 작성 (형식/분량 자유)</li>
+                            </ul>
+                            <div className="bg-white p-4 rounded border text-xs">
+                                <b>예시 템플릿</b><br />
+                                <pre className="whitespace-pre-wrap">
+                                    {`## 1. 개발 결과 요약
+- 어떤 문제를 선택했고, 어떻게 해결했는지 간단히 요약
+- 구현한 주요 기능(3~4개)
+- 본인이 생각하는 완성도/만족도
+
+## 2. 개발 과정에서 느낀 점/회고
+- 개발 중 어려웠던 점, 극복 방법
+- 시간 배분/우선순위 결정에서의 고민
+- 본인만의 개발/설계 전략
+- (선택) Cursor 활용이 실제로 도움이 된 부분
+
+## 3. 아쉬운 점 & 추가로 하고 싶었던 것
+- 시간/역량상 미구현한 기능, 아쉬운 점
+- 더 개선하고 싶은 부분, 남은 아이디어
+
+## 4. 본인만의 인사이트/메시지 (자유)
+- 이번 테스트를 통해 느낀 점, 배운 점
+- AI와 협업하며 새롭게 얻은 개발 인사이트
+- 채용 담당자에게 남기고 싶은 메시지
+`}
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div className="bg-blue-50 p-6 rounded-lg mb-6">
+                            <h3 className="text-lg font-semibold mb-2">🚀 제출 및 브랜치 전략</h3>
+                            <ul className="text-sm list-disc pl-5">
+                                <li><b>dev</b> 브랜치 기준, <b>features/본인이름</b> 브랜치 생성</li>
+                                <li>모든 개발/커밋은 본인 브랜치에서만 진행</li>
+                                <li>최종 제출은 <b>features/본인이름</b>로 제출</li>
+                                <li><b>dev 브랜치에 직접 push 시 금지</b></li>
+                            </ul>
+                        </div>
+
+                        <div className="bg-green-50 p-6 rounded-lg mb-6">
+                            <h3 className="text-lg font-semibold mb-2">💾 커밋 가이드</h3>
+                            <ul className="text-sm list-disc pl-5">
+                                <li>기능 단위로 커밋 (예: <code>feat: 책 추가 API 구현</code>)</li>
+                                <li>의미 없는 <code>fix</code>, <code>update</code> 단독 커밋 금지</li>
+                                <li>커밋 메시지는 한글/영문 자유, 반드시 목적이 드러나게 작성</li>
+                            </ul>
+                        </div>
+
+                        <div className="bg-yellow-50 p-6 rounded-lg mb-6">
+                            <h3 className="text-lg font-semibold mb-2">🤖 AI 활용 내역 제출</h3>
+                            <ul className="text-sm list-disc pl-5">
+                                <li>Cursor에서 AI프롬프트 대화 내역을 <b>export chat(MD 파일)</b>로 저장</li>
+                                <li>해당 MD 파일을 <b>브랜치에 커밋</b>하여 제출</li>
+                            </ul>
+                        </div>
+
+                        <div className="bg-red-50 p-6 rounded-lg">
+                            <h3 className="text-lg font-semibold mb-2">⚠️ 기타 유의사항</h3>
+                            <ul className="text-sm list-disc pl-5">
+                                <li>완벽보다 <b>작동하는 프로토타입</b> 완성이 목표</li>
+                                <li>프론트-백엔드 연동, RESTful API, 최소한의 UI/UX에 집중</li>
+                                <li>AI 도구 활용 흔적(프롬프트 내역) 반드시 포함</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
