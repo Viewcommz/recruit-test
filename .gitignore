@@ -67,3 +67,5 @@ yarn-error.log*
 .env
 .env.*
 .DS_Store 
+apps/frontend/.next/
+apps/backend/dist/
