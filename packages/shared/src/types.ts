@@ -7,6 +7,15 @@ export enum ReadingStatus {
     READ = "read",
 }
 
+// 독서 노트 태그 타입
+export enum ReadingNoteTag {
+    ROMANCE = "로맨스",
+    FANTASY = "판타지",
+    MARTIAL_ARTS = "무협",
+    MYSTERY = "추리",
+    LITERATURE = "일반문학",
+}
+
 // 도서 정보 스키마
 export const BookSchema = z.object({
     id: z.string(),
