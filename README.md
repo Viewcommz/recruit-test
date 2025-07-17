@@ -43,7 +43,8 @@
 
 5. **AI 활용**
 
-    - **Kiro** 프롬프트 대화 내역을 export chat(MD 파일)로 저장
+    - **Kiro** 프롬프트 대화 내역을 docs/PROMPT.md로 저장
+      ![kiro_prompt_export](./apps/frontend/public/llm_example.png)
     - 해당 MD 파일을 브랜치에 커밋하여 제출
 
 6. **REPORT.md 작성**
