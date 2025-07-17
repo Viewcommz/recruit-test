@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import dotenv from "dotenv";
+import { DatabaseService } from "./services/database";
+import booksRouter from "./routes/books";
+import tagsRouter from "./routes/tags";
 
 // 환경변수 로드
 dotenv.config();
@@ -9,18 +12,26 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8000;
 
+// 데이터베이스 초기화
+const db = DatabaseService.getInstance();
+db.init();
+
 // 미들웨어 설정
 app.use(helmet());
 app.use(
     cors({
         origin: ["http://localhost:3000"],
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Accept"],
         credentials: true,
     })
 );
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+// API 라우터 연결
+app.use("/api/books", booksRouter);
+app.use("/api/tags", tagsRouter);
 
 // 헬스체크 엔드포인트
 app.get("/api/health", (req, res) => {
@@ -38,10 +49,12 @@ app.get("/api", (req, res) => {
     res.json({
         name: "BookShelf API",
         version: "1.0.0",
-        description: "1시간 AI 개발 테스트용 백엔드",
+        description: "읽은 책 기억 도구 API",
         endpoints: {
             health: "/api/health",
             info: "/api",
+            books: "/api/books",
+            tags: "/api/tags",
         },
     });
 });
