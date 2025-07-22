@@ -6,7 +6,7 @@ export class DatabaseService {
     private static instance: DatabaseService;
     private db: Database.Database | null = null;
 
-    private constructor() {}
+    private constructor() { }
 
     public static getInstance(): DatabaseService {
         if (!DatabaseService.instance) {
@@ -96,58 +96,58 @@ export class DatabaseService {
 
     private seedData(): void {
         if (!this.db) return;
-
-        // 샘플 데이터가 이미 있는지 확인
+    
         const bookCount = this.db
             .prepare("SELECT COUNT(*) as count FROM books")
             .get() as { count: number };
         if (bookCount.count > 0) return;
-
-        console.log("🌱 Seeding sample data...");
-
-        // 샘플 도서 데이터
-        const sampleBooks = [
-            {
-                id: "book-1",
-                title: "클린 코드",
-                author: "로버트 C. 마틴",
-                isbn: "9788966260959",
-                publishedDate: "2013-12-24",
-                description: "애자일 소프트웨어 장인 정신",
-                thumbnail:
-                    "https://via.placeholder.com/150x200?text=Clean+Code",
-                pageCount: 584,
-                categories: JSON.stringify(["프로그래밍", "소프트웨어 개발"]),
-                language: "ko",
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-            },
-            {
-                id: "book-2",
-                title: "이펙티브 타입스크립트",
-                author: "댄 밴더캄",
-                isbn: "9791158392246",
-                publishedDate: "2021-06-30",
-                description: "동작 원리의 이해와 구체적인 조언 62가지",
-                thumbnail:
-                    "https://via.placeholder.com/150x200?text=Effective+TypeScript",
-                pageCount: 312,
-                categories: JSON.stringify([
-                    "프로그래밍",
-                    "TypeScript",
-                    "웹개발",
-                ]),
-                language: "ko",
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-            },
+    
+        console.log("🌱 Seeding sample web novels...");
+    
+        const now = new Date().toISOString();
+    
+        const genres = [
+            { genre: "판타지", desc: "마법과 용이 등장하는 판타지 세계의 모험담" },
+            { genre: "로맨스", desc: "사랑과 갈등을 그린 설레는 로맨스" },
+            { genre: "스릴러", desc: "숨막히는 긴장감과 반전이 있는 스릴러" },
+            { genre: "무협", desc: "강호의 고수들이 펼치는 무림의 전설" },
+            { genre: "현대물", desc: "도시와 일상 속 사건을 그린 현대물" },
         ];
-
+    
+        const koreanNames = [
+            "김서준", "박지민", "이하늘", "최유진", "정하람",
+            "한예린", "윤도현", "장서희", "배진수", "송다은",
+        ];
+    
+        const sampleBooks: any[] = [];
+    
+        for (let i = 1; i <= 50; i++) {
+            const genreObj = genres[Math.floor(Math.random() * genres.length)];
+            const author = koreanNames[Math.floor(Math.random() * koreanNames.length)];
+            const pageCount = Math.floor(Math.random() * 400) + 100;
+            const title = `${genreObj.genre} 웹소설 ${i}`;
+            const id = `book-${i}`;
+            sampleBooks.push({
+                id,
+                title,
+                author,
+                isbn: `978-${Math.floor(Math.random() * 1000000000000)}`,
+                publishedDate: `${2000 + Math.floor(Math.random() * 25)}-01-01`,
+                description: genreObj.desc,
+                thumbnail: `https://via.placeholder.com/150x200?text=WebNovel+${i}`,
+                pageCount,
+                categories: JSON.stringify([genreObj.genre, "웹소설"]),
+                language: "ko",
+                createdAt: now,
+                updatedAt: now,
+            });
+        }
+    
         const insertBook = this.db.prepare(`
-      INSERT INTO books (id, title, author, isbn, publishedDate, description, thumbnail, pageCount, categories, language, createdAt, updatedAt)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
+        INSERT INTO books (id, title, author, isbn, publishedDate, description, thumbnail, pageCount, categories, language, createdAt, updatedAt)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `);
+    
         for (const book of sampleBooks) {
             insertBook.run(
                 book.id,
@@ -164,9 +164,10 @@ export class DatabaseService {
                 book.updatedAt
             );
         }
-
-        console.log("✅ Sample data seeded successfully");
+    
+        console.log("✅ 50 dummy web novels seeded successfully");
     }
+    
 
     // Books CRUD
     public getAllBooks(): Book[] {
