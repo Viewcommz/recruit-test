@@ -2,12 +2,18 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import dotenv from "dotenv";
+import { DatabaseService } from "./services/database";
+import booksRouter from "./routes/books";
 
 // 환경변수 로드
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
+
+// 데이터베이스 초기화
+const db = DatabaseService.getInstance();
+db.init();
 
 // 미들웨어 설정
 app.use(helmet());
@@ -33,6 +39,9 @@ app.get("/api/health", (req, res) => {
     });
 });
 
+// API 라우터 연결
+app.use("/api/books", booksRouter);
+
 // 기본 API 정보
 app.get("/api", (req, res) => {
     res.json({
@@ -42,6 +51,7 @@ app.get("/api", (req, res) => {
         endpoints: {
             health: "/api/health",
             info: "/api",
+            books: "/api/books",
         },
     });
 });
